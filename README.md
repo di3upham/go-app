@@ -23,3 +23,10 @@ From another terminal, run the client:
 $ go build
 $ ./go-app grpchello
 ```
+
+Call API:
+```console
+$ ./go-app grpc-order-create https://abc.xyz
+$ ./go-app grpc-order-read 1
+$ curl localhost:9000/orders/1
+```

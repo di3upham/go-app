@@ -22,9 +22,9 @@ func main() {
 	app := cli.NewApp()
 	app.Commands = []cli.Command{
 		{Name: "daemon", Usage: "run server", Action: daemon},
-		{Name: "grpchello", Usage: "run grpc client", Action: grpchello},
-		{Name: "grpcordercreate", Action: grpcordercreate},
-		{Name: "grpcorderread", Action: grpcorderread},
+		{Name: "grpc-hello", Usage: "run grpc client", Action: grpcHello},
+		{Name: "grpc-order-create", Action: grpcOrderCreate},
+		{Name: "grpc-order-read", Action: grpcOrderRead},
 	}
 	app.RunAndExitOnError()
 }
@@ -36,7 +36,7 @@ func daemon(ctx *cli.Context) {
 	sampleapp.ServeHTTP()
 }
 
-func grpchello(clictx *cli.Context) {
+func grpcHello(clictx *cli.Context) {
 	// Set up a connection to the server.
 	target := "localhost" + sampleapp.Cf.GrpcPort
 	fmt.Println(target)
@@ -64,7 +64,7 @@ func grpchello(clictx *cli.Context) {
 	log.Printf("Greeting: %s", r.GetMessage())
 }
 
-func grpcordercreate(clictx *cli.Context) {
+func grpcOrderCreate(clictx *cli.Context) {
 	// Set up a connection to the server.
 	target := "localhost" + sampleapp.Cf.GrpcPort
 	conn, err := grpc.Dial(target, grpc.WithInsecure(), grpc.WithBlock())
@@ -89,7 +89,7 @@ func grpcordercreate(clictx *cli.Context) {
 	}
 }
 
-func grpcorderread(clictx *cli.Context) {
+func grpcOrderRead(clictx *cli.Context) {
 	// Set up a connection to the server.
 	target := "localhost" + sampleapp.Cf.GrpcPort
 	conn, err := grpc.Dial(target, grpc.WithInsecure(), grpc.WithBlock())
