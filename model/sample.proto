@@ -4,10 +4,39 @@ option go_package = "git.local/go-app/model";
 
 package model;
 
+message Context {
+  string client_id = 1;
+}
+
+message Order {
+  string id = 2;
+  string status = 3;
+  int64 created_at = 4;
+  string product_url = 5;
+}
+
+message Orders {
+  repeated Order orders = 2;
+}
+
+message Empty {
+  Context ctx = 1;
+}
+
+message Id {
+    string id = 2;
+}
+
 // The greeting service definition.
 service SampleAPI {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {};
+
+  rpc CreateOrder(Order) returns (Order);
+  rpc DeleteOrder(Id) returns (Empty);
+  rpc ListOrders(Id) returns (Orders);
+  rpc UpdateOrder(Order) returns (Order);
+  rpc ReadOrder(Id) returns (Order);
 }
 
 // The request message containing the user's name.

@@ -26,6 +26,7 @@ type Sampleapp struct {
 	stopchan  chan struct{} // signal to stop scheduling
 	isrunning bool
 	pb.UnimplementedSampleAPIServer
+	ordermgr *Ordermgr
 }
 
 func NewSampleapp() *Sampleapp {
@@ -35,6 +36,7 @@ func NewSampleapp() *Sampleapp {
 		Mutex:    &sync.Mutex{},
 		Cf:       cf,
 		stopchan: make(chan struct{}),
+		ordermgr: NewOrdermgr(NewDB()),
 	}
 	return app
 }
@@ -49,6 +51,15 @@ func (app *Sampleapp) ServeHTTP() {
 	})
 	r.GET("/json", func(c *gin.Context) {
 		c.JSON(200, struct{ Name string }{Name: "sampleapp"})
+	})
+	r.GET("/orders/:id", func(c *gin.Context) {
+		out, err := app.ordermgr.ReadOrder(c.Param("id"))
+		if err != nil {
+			// TODO errconv
+			c.JSON(500, err)
+			return
+		}
+		c.JSON(200, out)
 	})
 	r.Run(app.Cf.HTTPPort)
 }
@@ -98,4 +109,39 @@ func (app *Sampleapp) ServeGrpc() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func (app *Sampleapp) CreateOrder(ctx context.Context, in *pb.Order) (*pb.Order, error) {
+	// TODO perm
+	out, err := app.ordermgr.CreateOrder(in)
+	if err != nil {
+		// TODO errconv
+		return nil, err
+	}
+	return out, err
+}
+
+func (app *Sampleapp) DeleteOrder(context.Context, *pb.Id) (*pb.Empty, error) {
+	// TODO
+	return nil, nil
+}
+
+func (app *Sampleapp) ListOrders(context.Context, *pb.Id) (*pb.Orders, error) {
+	// TODO
+	return nil, nil
+}
+
+func (app *Sampleapp) UpdateOrder(context.Context, *pb.Order) (*pb.Order, error) {
+	// TODO
+	return nil, nil
+}
+
+func (app *Sampleapp) ReadOrder(ctx context.Context, in *pb.Id) (*pb.Order, error) {
+	// TODO perm
+	out, err := app.ordermgr.ReadOrder(in.GetId())
+	if err != nil {
+		// TODO errconv
+		return nil, err
+	}
+	return out, err
 }
