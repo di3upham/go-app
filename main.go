@@ -20,5 +20,6 @@ func main() {
 
 func daemon(ctx *cli.Context) {
 	go func() { http.ListenAndServe("localhost:6060", nil) }()
+	sampleapp.BatchAsync()
 	sampleapp.ServeHTTP()
 }
