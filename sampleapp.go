@@ -1,17 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"net"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	pb "git.local/go-app/model"
 	"github.com/gin-gonic/gin"
 	"github.com/kelseyhightower/envconfig"
+	"google.golang.org/grpc"
 )
 
 type Config struct {
 	HTTPPort string `default:":9000"`
+	GrpcPort string `default:":50051"`
 }
 
 type Sampleapp struct {
@@ -19,6 +25,7 @@ type Sampleapp struct {
 	Cf        Config
 	stopchan  chan struct{} // signal to stop scheduling
 	isrunning bool
+	pb.UnimplementedSampleAPIServer
 }
 
 func NewSampleapp() *Sampleapp {
@@ -74,4 +81,21 @@ func (app *Sampleapp) BatchAsync() chan struct{} {
 	}()
 
 	return app.stopchan
+}
+
+func (app *Sampleapp) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
+}
+
+func (app *Sampleapp) ServeGrpc() {
+	fmt.Println("ServeGrpc at localhost" + app.Cf.GrpcPort)
+	lis, err := net.Listen("tcp", app.Cf.GrpcPort)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	s := grpc.NewServer()
+	pb.RegisterSampleAPIServer(s, app)
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
 }
