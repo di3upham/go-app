@@ -7,6 +7,11 @@ Recompile the updated .proto file:
 $ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative model/sample.proto
 ```
 
+Run unit test:
+```console
+$ go test
+```
+
 Run the server:
 ```console
 $ go build
