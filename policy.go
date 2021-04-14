@@ -13,16 +13,26 @@ func ValidUrl(urlStr string) error {
 	if err != nil {
 		return err
 	}
+
 	if u.Hostname() == "" {
 		return errors.New("host name is null")
 	}
+
+	if _, has := allowPortsMap[u.Port()]; !has {
+		return errors.New(fmt.Sprintf("allowed ports are %s, but "+u.Port(), allowPorts[1:]))
+	}
+
 	if isLocalDomain(u.Hostname()) {
 		return errors.New("not allow local domain")
 	}
-	ip := net.ParseIP(u.Hostname())
-	if ip != nil && isPrivateIP(ip) {
-		return errors.New("not allow private ip")
+
+	hostips, _ := net.LookupIP(u.Hostname())
+	for _, hostip := range hostips {
+		if isPrivateIP(hostip) {
+			return errors.New("not allow private ip")
+		}
 	}
+
 	return nil
 }
 
@@ -50,6 +60,8 @@ func isPrivateIP(ip net.IP) bool {
 
 // Ref from https://stackoverflow.com/questions/41240761
 var privateIPBlocks []*net.IPNet
+var allowPorts = []string{"", "80", "443"}
+var allowPortsMap map[string]struct{}
 
 func init() {
 	for _, cidr := range []string{
@@ -67,5 +79,10 @@ func init() {
 			panic(fmt.Errorf("parse error on %q: %v", cidr, err))
 		}
 		privateIPBlocks = append(privateIPBlocks, block)
+	}
+
+	allowPortsMap = make(map[string]struct{}, len(allowPorts))
+	for _, port := range allowPorts {
+		allowPortsMap[port] = struct{}{}
 	}
 }
