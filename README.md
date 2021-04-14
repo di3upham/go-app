@@ -24,7 +24,7 @@ $ go build
 $ ./go-app grpchello
 ```
 
-Call API:
+From another terminal, call API:
 ```console
 $ ./go-app grpc-order-create https://abc.xyz
 $ ./go-app grpc-order-read 1
