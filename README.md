@@ -1,5 +1,7 @@
 # go-app
 
+Quick start [Go-gRPC](https://grpc.io/docs/languages/go/quickstart/)
+
 ## Run
 
 Recompile the updated .proto file:
