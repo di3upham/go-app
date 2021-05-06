@@ -1,6 +1,6 @@
 # go-app
 
-Quick start [Go-gRPC](https://grpc.io/docs/languages/go/quickstart/)
+Quick start [Go-gRPC](https://grpc.io/docs/languages/go/quickstart/), [MySQL](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04)
 
 ## Run
 
@@ -12,6 +12,14 @@ $ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt
 Run unit test:
 ```console
 $ go test
+```
+
+Create db:
+```console
+mysql> CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
+mysql> CREATE DATABASE dbname CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+mysql> GRANT ALL PRIVILEGES ON dbname.* TO 'user'@'localhost';
+mysql> CREATE TABLE `orders` (`id` varchar(20), `status` varchar(10), `created_at` bigint, `product_url` varchar(1024), UNIQUE KEY `id` (`id`));
 ```
 
 Run the server:
