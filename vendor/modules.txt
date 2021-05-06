@@ -22,6 +22,9 @@ github.com/go-playground/locales/currency
 github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.4.1
 github.com/go-playground/validator/v10
+# github.com/go-sql-driver/mysql v1.6.0
+## explicit
+github.com/go-sql-driver/mysql
 # github.com/golang/protobuf v1.5.0
 ## explicit
 github.com/golang/protobuf/proto
