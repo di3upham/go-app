@@ -1,13 +1,40 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"time"
 
 	pb "git.local/go-app/model"
 	"github.com/dgraph-io/ristretto"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jackc/pgx/v4"
 )
+
+type PostgreSQLDB struct {
+	conn *pgx.Conn
+}
+
+func NewPostgreSQLDB() *PostgreSQLDB {
+	conn, err := pgx.Connect(context.Background(), "postgres://username:password@localhost:5432/dbname")
+	if err != nil {
+		panic(err)
+	}
+	return &PostgreSQLDB{conn: conn}
+}
+
+func (db *PostgreSQLDB) ReadOrder(id string) (*pb.Order, error) {
+	var status, productUrl string
+	var createdAt int64
+	err := db.conn.QueryRow(context.Background(), `SELECT status, created_at, product_url FROM orders WHERE id=$1`, id).Scan(&status, &createdAt, &productUrl)
+	if err != nil && err != pgx.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &pb.Order{Id: id, Status: status, CreatedAt: createdAt, ProductUrl: productUrl}, nil
+}
 
 type DB struct {
 	cache *ristretto.Cache

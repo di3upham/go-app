@@ -14,12 +14,18 @@ Run unit test:
 $ go test
 ```
 
-Create db:
+MySQL:
 ```console
 mysql> CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
 mysql> CREATE DATABASE dbname CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 mysql> GRANT ALL PRIVILEGES ON dbname.* TO 'user'@'localhost';
 mysql> CREATE TABLE `orders` (`id` varchar(20), `status` varchar(10), `created_at` bigint, `product_url` varchar(1024), UNIQUE KEY `id` (`id`));
+```
+
+PostgreSQL:
+```console
+$ sudo su -postgres
+$ psql -c "ALTER USER username WITH PASSWORD 'password'"
 ```
 
 Run the server:
